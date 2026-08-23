@@ -40,6 +40,7 @@ use embedded_hal_async::spi::SpiDevice;
 pub mod buffer;
 pub mod epd2in9;
 pub mod epd2in9_v2;
+pub mod epd7in5_v2;
 /// This module provides hardware abstraction traits that can be used by display drivers.
 /// You should implement all the traits on a single struct, so that you can pass this one
 /// hardware struct to your display driver.
@@ -180,6 +181,12 @@ pub trait Wake<SPI: SpiDevice, ERROR> {
 
     /// Wakes and re-initialises the display (if necessary) if it's asleep.
     async fn wake(self, spi: &mut SPI) -> Result<Self::DisplayOut, ERROR>;
+}
+
+/// Displays that can be cleared with their base color.
+pub trait Clear<SPI: SpiDevice, ERROR> {
+    /// Fills the display with a specific color.
+    async fn clear(&mut self, spi: &mut SPI) -> Result<(), ERROR>;
 }
 
 /// Base trait for any display where the display can be updated separate from its framebuffer data.

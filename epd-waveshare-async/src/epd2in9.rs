@@ -67,9 +67,9 @@ impl RefreshMode {
 }
 
 /// The height of the display (portrait orientation).
-pub const DISPLAY_HEIGHT: u16 = 296;
+pub const DISPLAY_HEIGHT: u32 = 296;
 /// The width of the display (portrait orientation).
-pub const DISPLAY_WIDTH: u16 = 128;
+pub const DISPLAY_WIDTH: u32 = 128;
 /// It's recommended to avoid doing a full refresh more often than this (at least on a regular basis).
 pub const RECOMMENDED_MIN_FULL_REFRESH_INTERVAL: Duration = Duration::from_secs(180);
 /// It's recommended to do a full refresh at least this often.
@@ -167,13 +167,13 @@ impl Command {
 
 /// The length of the underlying buffer used by [Epd2In9].
 pub const BINARY_BUFFER_LENGTH: usize =
-    binary_buffer_length(Size::new(DISPLAY_WIDTH as u32, DISPLAY_HEIGHT as u32));
+    binary_buffer_length(Size::new(DISPLAY_WIDTH, DISPLAY_HEIGHT));
 /// The buffer type used by [Epd2In9].
 pub type Epd2In9Buffer =
-    BinaryBuffer<{ binary_buffer_length(Size::new(DISPLAY_WIDTH as u32, DISPLAY_HEIGHT as u32)) }>;
+    BinaryBuffer<{ binary_buffer_length(Size::new(DISPLAY_WIDTH, DISPLAY_HEIGHT)) }>;
 /// Constructs a new buffer for use with the [Epd2In9] display.
-pub fn new_buffer() -> Epd2In9Buffer {
-    Epd2In9Buffer::new(Size::new(DISPLAY_WIDTH as u32, DISPLAY_HEIGHT as u32))
+pub const fn new_buffer() -> Epd2In9Buffer {
+    Epd2In9Buffer::new(Size::new(DISPLAY_WIDTH, DISPLAY_HEIGHT))
 }
 
 /// This should be sent with [Command::DriverOutputControl] during initialisation.
@@ -269,7 +269,7 @@ where
         spi: &mut HW::Spi,
         mode: RefreshMode,
     ) -> Result<Epd2In9<HW, StateReady>, HW::Error> {
-        debug!("Initialising display");
+        debug!("Initializing display to {}", mode);
         self = self.reset().await?;
 
         // Reset all configurations to default.

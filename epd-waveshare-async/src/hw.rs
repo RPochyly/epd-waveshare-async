@@ -70,6 +70,13 @@ pub(crate) trait CommandDataSend: SpiHw + ErrorHw {
         command: u8,
         data: &[u8],
     ) -> Result<(), Self::Error>;
+
+    async fn send_iter<I: IntoIterator<Item = u8>>(
+        &mut self,
+        spi: &mut Self::Spi,
+        command: u8,
+        iter: Option<I>,
+    ) -> Result<(), Self::Error>;
 }
 
 impl<HW> BusyWait for HW
@@ -111,15 +118,37 @@ where
         command: u8,
         data: &[u8],
     ) -> Result<(), Self::Error> {
-        trace!("Sending EPD command: {:?}", command);
+        trace!("Sending EPD command: 0x{:02x}", command);
         self.wait_if_busy().await?;
 
         self.dc().set_low()?;
         spi.write(&[command]).await?;
 
-        if !data.is_empty() {
+        if data.len() > 0 {
             self.dc().set_high()?;
             spi.write(data).await?;
+        }
+
+        Ok(())
+    }
+
+    async fn send_iter<I: IntoIterator<Item = u8>>(
+        &mut self,
+        spi: &mut Self::Spi,
+        command: u8,
+        iter: Option<I>,
+    ) -> Result<(), Self::Error> {
+        trace!("Sending EPD command: 0x{:02x}", command);
+        self.wait_if_busy().await?;
+
+        self.dc().set_low()?;
+        spi.write(&[command]).await?;
+
+        if let Some(data) = iter {
+            self.dc().set_high()?;
+            for byte in data {
+                spi.write(&[byte]).await?;
+            }
         }
 
         Ok(())

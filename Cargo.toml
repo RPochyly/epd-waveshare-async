@@ -25,7 +25,7 @@ opt-level = "z"
 [profile.dev]
 debug = 2
 lto = false
-opt-level = 0
+opt-level = 1 # Iterators are slow with opt-level = 0
 
 [workspace.dependencies]
 defmt = "1.0"

@@ -1,0 +1,42 @@
+[package]
+name = "rp2350-samples"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+description = "Samples for the Raspberry Pi RP2350 using Waveshare e-paper displays."
+repository.workspace = true
+license.workspace = true
+
+[dependencies]
+embassy-embedded-hal = { version = "0.6", features = ["defmt"] }
+embassy-executor = { version = "0.10", features = [
+  "defmt",
+  "executor-thread",
+  "platform-cortex-m"
+] }
+embassy-rp = { version = "0.10", features = [
+  "chrono",
+  "critical-section-impl",
+  "defmt",
+  "rp235xa",
+  "time-driver"
+] }
+embassy-sync = "0.8.0"
+
+defmt-serial = "0.11.0"
+static_cell = "2.1.1"
+
+cortex-m = { version = "0.7", features = ["inline-asm"] }
+cortex-m-rt = "0.7"
+critical-section = "1.1"
+panic-probe = { version = "1.0", features = ["print-defmt"] }
+
+assign-resources = "0.5"
+defmt.workspace = true
+embassy-time.workspace = true
+embedded-graphics.workspace = true
+embedded-hal.workspace = true
+embedded-hal-async.workspace = true
+epd-waveshare-async = { path = "../../epd-waveshare-async", features = ["defmt"] }
+
+thiserror = { workspace = true, default-features = false }

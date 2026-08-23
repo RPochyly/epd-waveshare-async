@@ -1,0 +1,12 @@
+[target.thumbv8m.main-none-eabihf]
+runner = "./runner.sh"
+rustflags = [
+  "-C",
+  "target-cpu=cortex-m33",
+]
+
+[build]
+target = "thumbv8m.main-none-eabihf"
+
+[env]
+DEFMT_LOG = "info,epd_waveshare_async=trace"

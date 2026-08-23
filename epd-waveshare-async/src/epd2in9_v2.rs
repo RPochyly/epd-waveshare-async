@@ -13,7 +13,7 @@ use crate::{
     buffer::{
         binary_buffer_length, split_low_and_high, BinaryBuffer, BufferView, Gray2SplitBuffer,
     },
-    hw::{BusyHw, CommandDataSend as _, DcHw, DelayHw, ErrorHw, ResetHw, SpiHw},
+    hw::{BusyHw, CommandDataSend, DcHw, DelayHw, ErrorHw, ResetHw, SpiHw},
     log::{debug, debug_assert},
     DisplayPartial, DisplaySimple, Displayable, Reset, Sleep, Wake,
 };
@@ -187,9 +187,9 @@ impl RefreshMode {
 }
 
 /// The height of the display (portrait orientation).
-pub const DISPLAY_HEIGHT: u16 = 296;
+pub const DISPLAY_HEIGHT: u32 = 296;
 /// The width of the display (portrait orientation).
-pub const DISPLAY_WIDTH: u16 = 128;
+pub const DISPLAY_WIDTH: u32 = 128;
 /// It's recommended to avoid doing a full refresh more often than this (at least on a regular basis).
 pub const RECOMMENDED_MIN_FULL_REFRESH_INTERVAL: Duration = Duration::from_secs(180);
 /// It's recommended to do a full refresh at least this often.
@@ -323,16 +323,16 @@ impl Command {
 
 /// The length of the underlying buffer used by [Epd2In9V2].
 pub const BINARY_BUFFER_LENGTH: usize =
-    binary_buffer_length(Size::new(DISPLAY_WIDTH as u32, DISPLAY_HEIGHT as u32));
+    binary_buffer_length(Size::new(DISPLAY_WIDTH, DISPLAY_HEIGHT));
 /// The buffer type used by [Epd2In9V2].
 pub type Epd2In9BinaryBuffer = BinaryBuffer<BINARY_BUFFER_LENGTH>;
 /// Constructs a new binary buffer for use with the [Epd2In9V2] display.
-pub fn new_binary_buffer() -> Epd2In9BinaryBuffer {
-    Epd2In9BinaryBuffer::new(Size::new(DISPLAY_WIDTH as u32, DISPLAY_HEIGHT as u32))
+pub const fn new_binary_buffer() -> Epd2In9BinaryBuffer {
+    Epd2In9BinaryBuffer::new(Size::new(DISPLAY_WIDTH, DISPLAY_HEIGHT))
 }
 pub type Epd2In9Gray2Buffer = Gray2SplitBuffer<BINARY_BUFFER_LENGTH>;
-pub fn new_gray2_buffer() -> Epd2In9Gray2Buffer {
-    Epd2In9Gray2Buffer::new(Size::new(DISPLAY_WIDTH as u32, DISPLAY_HEIGHT as u32))
+pub const fn new_gray2_buffer() -> Epd2In9Gray2Buffer {
+    Epd2In9Gray2Buffer::new(Size::new(DISPLAY_WIDTH, DISPLAY_HEIGHT))
 }
 
 /// This should be sent with [Command::DriverOutputControl] during initialisation.
@@ -435,7 +435,7 @@ where
         spi: &mut HW::Spi,
         mode: RefreshMode,
     ) -> Result<Epd2In9V2<HW, StateReady>, HW::Error> {
-        debug!("Initialising display");
+        debug!("Initializing display to {}", mode);
         self = self.reset().await?;
 
         let mut epd = Epd2In9V2 {

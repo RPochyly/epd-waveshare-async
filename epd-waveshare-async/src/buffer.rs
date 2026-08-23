@@ -48,15 +48,13 @@ impl<const L: usize> BinaryBuffer<L> {
     /// const DIMENSIONS: Size = Size::new(8, 8);
     /// let buffer = BinaryBuffer::<{binary_buffer_length(DIMENSIONS)}>::new(DIMENSIONS);
     /// ```
-    pub fn new(dimensions: Size) -> Self {
-        debug_assert_eq!(
-            dimensions.width % 8,
-            0,
+    pub const fn new(dimensions: Size) -> Self {
+        assert!(
+            dimensions.width % 8 == 0,
             "Width must be a multiple of 8 for binary packing."
         );
-        debug_assert_eq!(
-            binary_buffer_length(dimensions),
-            L,
+        assert!(
+            binary_buffer_length(dimensions) == L,
             "Size must match given dimensions"
         );
 
@@ -287,7 +285,7 @@ impl<const L: usize> Gray2SplitBuffer<L> {
     /// const DIMENSIONS: Size = Size::new(8, 8);
     /// let buffer = Gray2SplitBuffer::<{gray2_split_buffer_length(DIMENSIONS)}>::new(DIMENSIONS);
     /// ```
-    pub fn new(dimensions: Size) -> Self {
+    pub const fn new(dimensions: Size) -> Self {
         Self {
             low: BinaryBuffer::new(dimensions),
             high: BinaryBuffer::new(dimensions),
