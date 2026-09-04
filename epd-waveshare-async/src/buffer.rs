@@ -197,7 +197,7 @@ impl<const L: usize> DrawTarget for BinaryBuffer<L> {
         let x_start = drawable_area.top_left.x;
         let x_end = drawable_area.top_left.x + drawable_area.size.width as i32;
 
-        let x_full_bytes_start = min(x_start + (8 - x_start % 8) % 8, x_end);
+        let x_full_bytes_start = min((x_start + 7) & !7, x_end);
         let x_full_bytes_end = max(x_end - (x_end % 8), x_start);
         let num_full_bytes_per_row = (x_full_bytes_end - x_full_bytes_start) / 8;
 
